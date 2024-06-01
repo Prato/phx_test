@@ -1,11 +1,37 @@
 import Config
 
+aws_debug = true
+
+elixir_postgres_user =
+  System.get_env("ELIXIR_POSTGRES_USER") ||
+    IO.puts("""
+    environment variable ELIXIR_POSTGRES_USER  is missing.
+    """)
+
+elixir_postgres_pass =
+  System.get_env("ELIXIR_POSTGRES_PASS") ||
+    IO.puts("""
+    environment variable ELIXIR_POSTGRES_PASS  is missing.
+    """)
+
+elixir_postgres_host =
+  System.get_env("ELIXIR_POSTGRES_HOST") ||
+    IO.puts("""
+    environment variable ELIXIR_POSTGRES_HOST  is missing.
+    """)
+
+elixir_postgres_db =
+  System.get_env("ELIXIR_POSTGRES_DB") ||
+    IO.puts("""
+    environment variable ELIXIR_POSTGRES_DB  is missing.
+    """)
+
 # Configure your database
 config :phx_test, PhxTest.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "phx_test_dev",
+  username: elixir_postgres_user,
+  password: elixir_postgres_pass,
+  hostname: elixir_postgres_host,
+  database: elixir_postgres_db,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -19,6 +45,7 @@ config :phx_test, PhxTest.Repo,
 config :phx_test, PhxTestWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+  # TODO: enable TLS
   http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
   code_reloader: true,
@@ -83,3 +110,30 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+###
+# Configure AWS Secrets
+###
+aws_access_key_id =
+  System.get_env("AWS_ACCESS_KEY_ID") ||
+    IO.puts("""
+    environment variable AWS_ACCESS_KEY_ID  is missing.
+    """)
+
+aws_secret_access_key =
+  System.get_env("AWS_SECRET_ACCESS_KEY") ||
+    IO.puts("""
+    environment variable AWS_SECRET_ACCESS_KEY  is missing.
+    """)
+
+aws_region =
+  System.get_env("AWS_DEFAULT_REGION") ||
+    IO.puts("""
+    environment variable AWS_DEFAULT_REGION  is missing.
+    """)
+
+config :ex_aws,
+  debug_requests: aws_debug,
+  region: aws_region,
+  access_key_id: aws_access_key_id,
+  secret_access_key: aws_secret_access_key
